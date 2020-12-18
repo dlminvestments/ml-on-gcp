@@ -66,10 +66,7 @@ class AIPlatformModel(object):
                 parent='projects/{}'.format(self._project_id)).execute()
             if response:
                 for model in response['models']:
-                    if model['name'].rsplit('/', 1)[1] == model_name:
-                        return True
-                    else:
-                        return False
+                    return model['name'].rsplit('/', 1)[1] == model_name
         except errors.HttpError as err:
             logging.error('%s', json.loads(err.content)['error']['message'])
 
