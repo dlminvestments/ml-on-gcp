@@ -212,8 +212,10 @@ def run_ncf(_):
                        params["batches_per_step"])
     num_eval_steps = (producer.eval_batches_per_epoch //
                       params["batches_per_step"])
-    assert not producer.train_batches_per_epoch % params["batches_per_step"]
-    assert not producer.eval_batches_per_epoch % params["batches_per_step"]
+    if producer.train_batches_per_epoch % params["batches_per_step"]:
+      raise AssertionError
+    if producer.eval_batches_per_epoch % params["batches_per_step"]:
+      raise AssertionError
   producer.start()
 
   params["num_users"], params["num_items"] = num_users, num_items
@@ -226,7 +228,8 @@ def run_ncf(_):
   target_reached = False
   mlperf_helper.ncf_print(key=mlperf_helper.TAGS.TRAIN_LOOP)
   for cycle_index in range(total_training_cycle):
-    assert FLAGS.epochs_between_evals == 1 or not mlperf_helper.LOGGER.enabled
+    if not (FLAGS.epochs_between_evals == 1 or not mlperf_helper.LOGGER.enabled):
+      raise AssertionError
     tf.logging.info("Starting a training cycle: {}/{}".format(
         cycle_index + 1, total_training_cycle))
 

@@ -127,10 +127,14 @@ def _filter_index_sort(raw_rating_path, cache_path):
     mlperf_helper.ncf_print(key=mlperf_helper.TAGS.PREPROC_HP_NUM_EVAL,
                             value=rconst.NUM_EVAL_NEGATIVES)
 
-    assert num_users <= np.iinfo(rconst.USER_DTYPE).max
-    assert num_items <= np.iinfo(rconst.ITEM_DTYPE).max
-    assert df[movielens.USER_COLUMN].max() == num_users - 1
-    assert df[movielens.ITEM_COLUMN].max() == num_items - 1
+    if num_users > np.iinfo(rconst.USER_DTYPE).max:
+      raise AssertionError
+    if num_items > np.iinfo(rconst.ITEM_DTYPE).max:
+      raise AssertionError
+    if df[movielens.USER_COLUMN].max() != num_users - 1:
+      raise AssertionError
+    if df[movielens.ITEM_COLUMN].max() != num_items - 1:
+      raise AssertionError
 
     # This sort is used to shard the dataframe by user, and later to select
     # the last item for a user to be used in validation.

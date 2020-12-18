@@ -52,9 +52,10 @@ DATASET_NAME = 'CIFAR-10'
 ###############################################################################
 def get_filenames(is_training, data_dir):
   """Returns a list of filenames."""
-  assert tf.gfile.Exists(data_dir), (
-      'Run cifar10_download_and_extract.py first to download and extract the '
-      'CIFAR-10 data.')
+  if not tf.gfile.Exists(data_dir):
+    raise AssertionError(
+        'Run cifar10_download_and_extract.py first to download and extract the '
+        'CIFAR-10 data.')
 
   if is_training:
     return [

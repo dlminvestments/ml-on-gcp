@@ -54,7 +54,8 @@ def test_generative_adversarial_network(gcs_bucket_prefix, submit_script):
     out = subprocess.check_output(['bash', submit_script], env=subprocess_env)
     out_str = out.decode('ascii')
 
-    assert 'QUEUED' in out_str, 'Job submission failed: {}'.format(out_str)
+    if 'QUEUED' not in out_str:
+        raise AssertionError('Job submission failed: {}'.format(out_str))
 
     # Get jobId so we can cancel the job easily.
     job_id = re.match(r'jobId: (.+)\b', out_str).group(1)
@@ -67,4 +68,5 @@ def test_generative_adversarial_network(gcs_bucket_prefix, submit_script):
     blob_names = [blob.name for blob in bucket.list_blobs(prefix=prefix)]
     out_str = ' '.join(blob_names)
 
-    assert '_images.png' in out_str, 'Artifact "_images.png" not found in bucket {} with prefix {} after {} seconds.'.format(bucket, prefix, WAIT_TIME)
+    if '_images.png' not in out_str:
+        raise AssertionError('Artifact "_images.png" not found in bucket {} with prefix {} after {} seconds.'.format(bucket, prefix, WAIT_TIME))

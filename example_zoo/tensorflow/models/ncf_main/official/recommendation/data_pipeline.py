@@ -215,8 +215,10 @@ class DatasetManager(object):
 
   def data_generator(self, epochs_between_evals):
     """Yields examples during local training."""
-    assert not self._stream_files
-    assert self._is_training or epochs_between_evals == 1
+    if self._stream_files:
+      raise AssertionError
+    if not (self._is_training or epochs_between_evals == 1):
+      raise AssertionError
 
     if self._is_training:
       for _ in range(self._batches_per_epoch * epochs_between_evals):
@@ -224,7 +226,8 @@ class DatasetManager(object):
 
     else:
       if self._result_reuse:
-        assert len(self._result_reuse) == self._batches_per_epoch
+        if len(self._result_reuse) != self._batches_per_epoch:
+          raise AssertionError
 
         for i in self._result_reuse:
           yield i
@@ -570,7 +573,8 @@ class BaseDataConstructor(threading.Thread):
     items[:, (0, -1)] = items[:, (-1, 0)]
     duplicate_mask[:, (0, -1)] = duplicate_mask[:, (-1, 0)]
 
-    assert users.shape == items.shape == duplicate_mask.shape
+    if users.shape != items.shape:
+      raise AssertionError
     return users, items, duplicate_mask
 
   def _get_eval_batch(self, i):
@@ -727,7 +731,8 @@ class MaterializedDataConstructor(BaseDataConstructor):
     # Set the table to the max value to make sure the embedding lookup will fail
     # if we go out of bounds, rather than just overloading item zero.
     self._negative_table += np.iinfo(rconst.ITEM_DTYPE).max
-    assert self._num_items < np.iinfo(rconst.ITEM_DTYPE).max
+    if self._num_items >= np.iinfo(rconst.ITEM_DTYPE).max:
+      raise AssertionError
 
     # Reuse arange during generation. np.delete will make a copy.
     full_set = np.arange(self._num_items, dtype=rconst.ITEM_DTYPE)
@@ -785,8 +790,9 @@ class BisectionDataConstructor(BaseDataConstructor):
     self.index_bounds = np.array([0] + inner_bounds.tolist() + [upper_bound])
 
     # Later logic will assume that the users are in sequential ascending order.
-    assert np.array_equal(self._train_pos_users[self.index_bounds[:-1]],
-                          np.arange(self._num_users))
+    if not np.array_equal(self._train_pos_users[self.index_bounds[:-1]],
+                          np.arange(self._num_users)):
+      raise AssertionError
 
     self._sorted_train_pos_items = self._train_pos_items.copy()
 
@@ -853,14 +859,16 @@ class BisectionDataConstructor(BaseDataConstructor):
     #   The right index is the smallest index whose tally is greater than the
     #   negative item choice index.
 
-    assert np.all((right_index - left_index) <= 1)
+    if not np.all((right_index - left_index) <= 1):
+      raise AssertionError
 
     output[not_use_shortcut] = (
         self._sorted_train_pos_items[right_index] -
         (self._total_negatives[right_index] - neg_item_choice)
     )
 
-    assert np.all(output >= 0)
+    if not np.all(output >= 0):
+      raise AssertionError
 
     return output
 
