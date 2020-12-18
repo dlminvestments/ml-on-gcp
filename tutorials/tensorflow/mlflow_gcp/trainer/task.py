@@ -282,8 +282,7 @@ def train_and_evaluate(args):
         logging.info('Uploading TensorFlow events as a run artifact.')
         mlflow.log_artifacts(tensorboard_path)
         logging.info(
-            'Launch TensorBoard with:\n\ntensorboard --logdir=%s' %
-            tensorboard_path)
+            'Launch TensorBoard with:\n\ntensorboard --logdir=%s', tensorboard_path)
         duration = time() - start_time
         mlflow.log_metric('duration', duration)
         mlflow.end_run()
