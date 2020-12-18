@@ -315,7 +315,8 @@ def resnet_model_fn(features, labels, mode, model_class,
   # Generate a summary node for the images
   tf.summary.image('images', features, max_outputs=6)
   # Checks that features/images have same data type being used for calculations.
-  assert features.dtype == dtype
+  if features.dtype != dtype:
+    raise AssertionError
 
   model = model_class(resnet_size, data_format, resnet_version=resnet_version,
                       dtype=dtype)

@@ -54,7 +54,8 @@ def create_model(data_format):
   if data_format == 'channels_first':
     input_shape = [1, 28, 28]
   else:
-    assert data_format == 'channels_last'
+    if data_format != 'channels_last':
+      raise AssertionError
     input_shape = [28, 28, 1]
 
   l = tf.keras.layers
