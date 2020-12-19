@@ -246,8 +246,7 @@ class CMLEPackage(object):
     def package_path(self):
         if self.script_path:
             return self.script_path.split('/')[0]
-        else:
-            return 'trainer'
+        return 'trainer'
 
 
     @property

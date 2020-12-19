@@ -58,12 +58,11 @@ def get_filenames(is_training, data_dir):
         'CIFAR-10 data.')
 
   if is_training:
-    return [
-        os.path.join(data_dir, 'data_batch_%d.bin' % i)
-        for i in range(1, _NUM_DATA_FILES + 1)
-    ]
-  else:
-    return [os.path.join(data_dir, 'test_batch.bin')]
+      return [
+          os.path.join(data_dir, 'data_batch_%d.bin' % i)
+          for i in range(1, _NUM_DATA_FILES + 1)
+      ]
+  return [os.path.join(data_dir, 'test_batch.bin')]
 
 
 def parse_record(raw_record, is_training, dtype):

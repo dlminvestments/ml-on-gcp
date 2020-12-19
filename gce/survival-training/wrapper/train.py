@@ -96,9 +96,8 @@ def runner(
   def finished(step):
     """Returns True if job is complete and False otherwise."""
     if train_steps is None:
-      return False
-    else:
-      return step > train_steps
+        return False
+    return step > train_steps
 
   result = None
   # TODO(nkashy1): Add test for "up to N steps" rather than "additional N steps"

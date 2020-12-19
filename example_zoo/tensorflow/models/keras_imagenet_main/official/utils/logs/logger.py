@@ -436,6 +436,5 @@ def _parse_gpu_model(physical_device_desc):
 
 def _convert_to_json_dict(input_dict):
   if input_dict:
-    return [{"name": k, "value": v} for k, v in sorted(input_dict.items())]
-  else:
-    return []
+      return [{"name": k, "value": v} for k, v in sorted(input_dict.items())]
+  return []

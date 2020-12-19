@@ -146,23 +146,22 @@ class GKEParallel(object):
             # If the input is already a list of param_grids then just
             # use it as is.
             return param_grid
-        else:
-            # The strategy is to simply expand the grid fully with
-            # respect to a parameter:
-            # [1, 2, 3]x[4, 5] --> [1]x[4, 5], [2]x[4, 5], [3]x[4, 5]
-            # until the target number of partitions is reached.
-            partition_keys = []
-            n_partition = 1
-            for key, lst in param_grid.items():
-                partition_keys.append(key)
-                n_partition *= len(lst)
+        # The strategy is to simply expand the grid fully with
+        # respect to a parameter:
+        # [1, 2, 3]x[4, 5] --> [1]x[4, 5], [2]x[4, 5], [3]x[4, 5]
+        # until the target number of partitions is reached.
+        partition_keys = []
+        n_partition = 1
+        for key, lst in param_grid.items():
+            partition_keys.append(key)
+            n_partition *= len(lst)
 
-                if n_partition >= target_n_partition:
-                    break
+            if n_partition >= target_n_partition:
+                break
 
-            partitioned = self._partition_grid(param_grid, partition_keys)
+        partitioned = self._partition_grid(param_grid, partition_keys)
 
-            return partitioned
+        return partitioned
 
 
     def _handle_grid_search(self, X_uri, y_uri):
@@ -292,14 +291,13 @@ class GKEParallel(object):
             # If the input is already a list of search_spaces then just
             # use it as is.
             return search_spaces.values()
-        else:
-            result = search_spaces.values()
-            while len(result) < target_n_partition:
-                space = result.pop()
-                partitioned = self._partition_space(space)
-                result.extend(partitioned)
+        result = search_spaces.values()
+        while len(result) < target_n_partition:
+            space = result.pop()
+            partitioned = self._partition_space(space)
+            result.extend(partitioned)
 
-            return result
+        return result
 
 
     def _handle_bayes_search(self, X_uri, y_uri):

@@ -85,57 +85,55 @@ def neumf_model_fn(features, labels, mode, params):
                               logits], axis=1)
 
   if mode == tf.estimator.ModeKeys.EVAL:
-    duplicate_mask = tf.cast(features[rconst.DUPLICATE_MASK], tf.float32)
-    return compute_eval_loss_and_metrics(
-        logits, softmax_logits, duplicate_mask, params["num_neg"],
-        params["match_mlperf"],
-        use_tpu_spec=params["use_xla_for_gpu"])
+      duplicate_mask = tf.cast(features[rconst.DUPLICATE_MASK], tf.float32)
+      return compute_eval_loss_and_metrics(
+          logits, softmax_logits, duplicate_mask, params["num_neg"],
+          params["match_mlperf"],
+          use_tpu_spec=params["use_xla_for_gpu"])
 
-  elif mode == tf.estimator.ModeKeys.TRAIN:
-    labels = tf.cast(labels, tf.int32)
-    valid_pt_mask = features[rconst.VALID_POINT_MASK]
+  if mode == tf.estimator.ModeKeys.TRAIN:
+      labels = tf.cast(labels, tf.int32)
+      valid_pt_mask = features[rconst.VALID_POINT_MASK]
 
-    mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_NAME, value="adam")
-    mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_LR,
-                            value=params["learning_rate"])
-    mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_HP_ADAM_BETA1,
-                            value=params["beta1"])
-    mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_HP_ADAM_BETA2,
-                            value=params["beta2"])
-    mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_HP_ADAM_EPSILON,
-                            value=params["epsilon"])
+      mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_NAME, value="adam")
+      mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_LR,
+                              value=params["learning_rate"])
+      mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_HP_ADAM_BETA1,
+                              value=params["beta1"])
+      mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_HP_ADAM_BETA2,
+                              value=params["beta2"])
+      mlperf_helper.ncf_print(key=mlperf_helper.TAGS.OPT_HP_ADAM_EPSILON,
+                              value=params["epsilon"])
 
-    optimizer = tf.train.AdamOptimizer(
-        learning_rate=params["learning_rate"], beta1=params["beta1"],
-        beta2=params["beta2"], epsilon=params["epsilon"])
-    if params["use_tpu"]:
-      optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+      optimizer = tf.train.AdamOptimizer(
+          learning_rate=params["learning_rate"], beta1=params["beta1"],
+          beta2=params["beta2"], epsilon=params["epsilon"])
+      if params["use_tpu"]:
+          optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
-    mlperf_helper.ncf_print(key=mlperf_helper.TAGS.MODEL_HP_LOSS_FN,
-                            value=mlperf_helper.TAGS.BCE)
-    loss = tf.losses.sparse_softmax_cross_entropy(
-        labels=labels,
-        logits=softmax_logits,
-        weights=tf.cast(valid_pt_mask, tf.float32)
-    )
+      mlperf_helper.ncf_print(key=mlperf_helper.TAGS.MODEL_HP_LOSS_FN,
+                              value=mlperf_helper.TAGS.BCE)
+      loss = tf.losses.sparse_softmax_cross_entropy(
+          labels=labels,
+          logits=softmax_logits,
+          weights=tf.cast(valid_pt_mask, tf.float32)
+      )
 
-    # This tensor is used by logging hooks.
-    tf.identity(loss, name="cross_entropy")
+      # This tensor is used by logging hooks.
+      tf.identity(loss, name="cross_entropy")
 
-    global_step = tf.train.get_global_step()
-    tvars = tf.trainable_variables()
-    gradients = optimizer.compute_gradients(
-        loss, tvars, colocate_gradients_with_ops=True)
-    gradients = _sparse_to_dense_grads(gradients)
-    minimize_op = optimizer.apply_gradients(
-        gradients, global_step=global_step, name="train")
-    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-    train_op = tf.group(minimize_op, update_ops)
+      global_step = tf.train.get_global_step()
+      tvars = tf.trainable_variables()
+      gradients = optimizer.compute_gradients(
+          loss, tvars, colocate_gradients_with_ops=True)
+      gradients = _sparse_to_dense_grads(gradients)
+      minimize_op = optimizer.apply_gradients(
+          gradients, global_step=global_step, name="train")
+      update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+      train_op = tf.group(minimize_op, update_ops)
 
-    return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
-
-  else:
-    raise NotImplementedError
+      return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
+  raise NotImplementedError
 
 
 def construct_model(users, items, params):

@@ -101,14 +101,13 @@ def conversion_helper(model_type, filename):
   :return:
   """
   if model_type == 'jpg':
-    return convert_to_base64(
-      os.path.join(app.config['UPLOAD_FOLDER'], filename))
-  elif model_type == 'tensor':
-    return convert_to_json(
-      os.path.join(app.config['UPLOAD_FOLDER'], filename))
-  else:
-    logging.error('Invalid model')
-    return redirect(request.url)
+      return convert_to_base64(
+        os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  if model_type == 'tensor':
+      return convert_to_json(
+        os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  logging.error('Invalid model')
+  return redirect(request.url)
 
 
 def model_predict(predict_request):

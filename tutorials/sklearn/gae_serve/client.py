@@ -30,5 +30,4 @@ class ModelServiceClient(object):
         response_json = response.json()
         if 'y' in response_json:
             return response_json['y']
-        else:
-            print(response_json)
+        print(response_json)
