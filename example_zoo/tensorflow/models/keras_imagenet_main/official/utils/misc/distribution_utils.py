@@ -44,14 +44,12 @@ def get_distribution_strategy(num_gpus,
   """
   if num_gpus == 0:
     if turn_off_distribution_strategy:
-      return None
-    else:
-      return tf.contrib.distribute.OneDeviceStrategy("device:CPU:0")
+        return None
+    return tf.contrib.distribute.OneDeviceStrategy("device:CPU:0")
   elif num_gpus == 1:
     if turn_off_distribution_strategy:
-      return None
-    else:
-      return tf.contrib.distribute.OneDeviceStrategy("device:GPU:0")
+        return None
+    return tf.contrib.distribute.OneDeviceStrategy("device:GPU:0")
   elif turn_off_distribution_strategy:
     raise ValueError("When {} GPUs are specified, "
                      "turn_off_distribution_strategy flag cannot be set to"
@@ -59,12 +57,11 @@ def get_distribution_strategy(num_gpus,
   else:  # num_gpus > 1 and not turn_off_distribution_strategy
     devices = ["device:GPU:%d" % i for i in range(num_gpus)]
     if all_reduce_alg:
-      return tf.distribute.MirroredStrategy(
-          devices=devices,
-          cross_device_ops=tf.contrib.distribute.AllReduceCrossDeviceOps(
-              all_reduce_alg, num_packs=2))
-    else:
-      return tf.distribute.MirroredStrategy(devices=devices)
+        return tf.distribute.MirroredStrategy(
+            devices=devices,
+            cross_device_ops=tf.contrib.distribute.AllReduceCrossDeviceOps(
+                all_reduce_alg, num_packs=2))
+    return tf.distribute.MirroredStrategy(devices=devices)
 
 
 def per_device_batch_size(batch_size, num_gpus):
