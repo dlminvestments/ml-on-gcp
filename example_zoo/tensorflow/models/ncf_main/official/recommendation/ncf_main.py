@@ -21,15 +21,9 @@ The NeuMF model assembles both MF and MLP models under the NCF framework. Check
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
-import contextlib
-import heapq
 import json
 import logging
-import math
-import multiprocessing
 import os
-import signal
 import typing
 
 # pylint: disable=g-bad-import-order

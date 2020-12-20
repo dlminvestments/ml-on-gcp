@@ -25,11 +25,9 @@ from __future__ import division
 from __future__ import print_function
 
 from collections import namedtuple
-import json
 import os
 import re
 import subprocess
-import sys
 import typing
 
 import tensorflow as tf

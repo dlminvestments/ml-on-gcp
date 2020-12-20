@@ -5,8 +5,6 @@ meta information using the AI Platform Prediction API.
 
 import json
 
-from flask import current_app as app
-
 import googleapiclient.discovery
 
 

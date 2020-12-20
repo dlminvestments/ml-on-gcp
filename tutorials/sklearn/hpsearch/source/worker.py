@@ -19,11 +19,6 @@ the `fit` method on that object, and persist the fitted object to GCS.
 """
 
 import argparse
-import datetime
-import logging
-import pickle
-import re
-from google.cloud import storage
 from gcs_helper import pickle_and_upload, download_and_unpickle, download_uri_and_unpickle
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from skopt import BayesSearchCV
