@@ -24,7 +24,6 @@ import os
 import shutil
 
 from builtins import int
-from mlflow import pyfunc
 from tensorflow.python.saved_model import tag_constants
 from time import time
 

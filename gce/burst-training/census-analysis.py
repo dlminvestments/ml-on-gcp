@@ -18,7 +18,6 @@ import numpy as np
 import os
 import pandas as pd
 import tensorflow as tf
-import scipy
 import sklearn
 
 from sklearn.ensemble import GradientBoostingClassifier

@@ -13,9 +13,7 @@
 # limitations under the License.
 
 import os
-import re
 import shutil
-import urllib2
 
 
 class Pipe(object):

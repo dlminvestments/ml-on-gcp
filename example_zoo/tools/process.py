@@ -15,7 +15,6 @@
 import argparse
 from contextlib import contextmanager
 import glob
-import os
 import shutil
 import tempfile
 import yaml

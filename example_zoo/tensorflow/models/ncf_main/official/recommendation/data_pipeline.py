@@ -30,7 +30,6 @@ import traceback
 import typing
 
 import numpy as np
-import six
 from six.moves import queue
 import tensorflow as tf
 from tensorflow.contrib.tpu.python.tpu.datasets import StreamingFilesDataset
