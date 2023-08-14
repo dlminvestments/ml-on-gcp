@@ -4,7 +4,11 @@ cachetools==3.0.0
 certifi==2023.7.22
 chardet==3.0.4
 Click==7.0
+ snyk-fix-a1f6fb93574d0c699cbcd80e8355c398
+Flask==2.2.5
+=======
 Flask==2.3.2
+ master
 gast==0.2.2
 google-api-core==1.6.0
 google-auth==1.6.1
